@@ -889,7 +889,7 @@ def disease_centric_evaluation(df, df_train, df_valid, df_test, data_path, G, mo
         ids_all = list(preds_all[rel].keys())
 
         name, auroc, auprc =  {}, {}, {}
-        acc, sens, spec, f1, ppv, npv, fpr, fnr, fdr, pos_len, ids, ranked_list = {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
+        acc, sens, spec, f1, ppv, npv, fpr, fnr, fdr, pos_len, ids, ranked_list, ranked_list_preds = {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
 
         AP, MRR, Recall, Recall_Random, Enrichment, not_in_ranked_list, in_ranked_list = {}, {}, {}, {}, {}, {}, {}
 
@@ -930,8 +930,10 @@ def disease_centric_evaluation(df, df_train, df_valid, df_test, data_path, G, mo
                     auprc[entity_id] = -1
             
             ranked_list_entity = np.argsort(pred_array)[::-1]
+            pred_scores_entity = np.sort(pred_array)[::-1]
             ranked_list[entity_id] = [id2name[idx2id[i]] for i in ranked_list_entity]
-            
+            ranked_list_preds[entity_id] = pred_scores_entity
+
             if simulate_random:
                 ranked_list_random = []
                 for i in range(500):
@@ -1002,7 +1004,8 @@ def disease_centric_evaluation(df, df_train, df_valid, df_test, data_path, G, mo
 
         out_dict = {'ID': ids,
                 'Name': name,
-                'Ranked List': ranked_list,            
+                'Ranked List': ranked_list,
+                'Scores': ranked_list_preds,           
                 'AUROC': auroc, 
                 'AUPRC': auprc, 
                 'Accuracy': acc,
